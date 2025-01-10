@@ -1,7 +1,5 @@
 import re
-from collections import namedtuple
-
-Token = namedtuple("Token", ["type", "value", "line", "column"])
+from language_token import LanguageToken
 
 
 class Lexer:
@@ -24,7 +22,7 @@ class Lexer:
                     value = match.group(0)
 
                     if token_type:
-                        tokens.append(Token(token_type, value, line, column))
+                        tokens.append(LanguageToken(token_type, value, line, column))
 
                     idx += len(value)
                     column += len(value)
