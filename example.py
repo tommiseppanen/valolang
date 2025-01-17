@@ -5,14 +5,19 @@ from token_parser import TokenParser
 
 lexer = Lexer(rules)
 
-text = "1 + 2"
+text = """
+def add(x, y) { x + y }
+def multiply(x, y) { x * y }
+multiply(add(2, 3), 2)
+"""
+
 tokens = lexer.tokenize(text)
 for token in tokens:
     print(token)
 
 parser = TokenParser(tokens)
-ast = parser.parse_expression()
+ast = parser.parse()
 print(ast)
 
-evaluator = Evaluator(ast)
-print(f"Result: {evaluator.evaluate()}")
+evaluator = Evaluator()
+print(f"Result: {evaluator.evaluate(ast)}")

@@ -43,8 +43,15 @@ class Lexer:
 
 rules = [
     (r"[ \t\n]+", None),
-    (r"\d+", "NUMBER"),
-    (r"[a-zA-Z_]\w*", "IDENTIFIER"),
-    (r"[+\-*/]", "OPERATOR"),
-    (r"[()]", "PARENTHESES"),
+    (r"\d+", "NUMBER"),  # Number
+    (r"def", "DEF"),  # Function definition keyword
+    (r"[a-zA-Z_]\w*", "IDENTIFIER"),  # Identifiers
+    (r"[+\-*/]", "OPERATOR"),  # Arithmetic operators
+    (r"\(", "LPAREN"),  # Left parenthesis
+    (r"\)", "RPAREN"),  # Right parenthesis
+    (r",", "COMMA"),  # Comma
+    (r"\{", "LBRACE"),  # Left curly brace
+    (r"\}", "RBRACE"),  # Right curly brace
+    (r"=", "ASSIGN"),  # Assignment
+    (r"[;]", "SEMICOLON"),  # Semicolon
 ]

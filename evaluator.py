@@ -1,20 +1,31 @@
 class Evaluator:
-    def __init__(self, ast):
-        self.ast = ast
+    def __init__(self):
+        self.functions = {}  # Function table: {name: (params, body)}
 
-    def evaluate(self):
-        return self.eval_node(self.ast)
+    def evaluate(self, ast):
+        result = None
+        for node in ast:
+            result = self.eval_node(node, {})
+        return result
 
-    def eval_node(self, node):
+    def eval_node(self, node, context):
         node_type = node[0]
 
         if node_type == "NUMBER":
             return float(node[1]) if "." in node[1] else int(node[1])
 
+        elif node_type == 'IDENTIFIER':
+            # Resolve variable name in the context
+            name = node[1]
+            if name in context:
+                return context[name]
+            else:
+                raise NameError(f"Undefined variable '{name}'")
+
         elif node_type == "BIN_OP":
             _, operator, left_node, right_node = node
-            left_value = self.eval_node(left_node)
-            right_value = self.eval_node(right_node)
+            left_value = self.eval_node(left_node, context)
+            right_value = self.eval_node(right_node, context)
 
             if operator == "+":
                 return left_value + right_value
@@ -26,6 +37,34 @@ class Evaluator:
                 return left_value / right_value
             else:
                 raise ValueError(f"Unknown operator: {operator}")
+
+        elif node_type == 'FUNCTION_DEF':
+            # Store function definition: ('FUNCTION_DEF', name, params, body)
+            _, name, params, body = node
+            self.functions[name] = (params, body)
+
+        elif node_type == 'FUNCTION_CALL':
+            # Evaluate function call: ('FUNCTION_CALL', name, args)
+            _, name, args = node
+
+            # Lookup the function definition
+            if name not in self.functions:
+                raise NameError(f"Undefined function '{name}'")
+
+            params, body = self.functions[name]
+
+            # Check arity (number of arguments)
+            if len(params) != len(args):
+                raise TypeError(f"Function '{name}' expects {len(params)} arguments, got {len(args)}")
+
+            # Evaluate arguments
+            arg_values = [self.eval_node(arg, context) for arg in args]
+
+            # Create a new context for the function execution
+            function_context = {param: value for param, value in zip(params, arg_values)}
+
+            # Evaluate the function body in its own context
+            return self.eval_node(body, function_context)
 
         else:
             raise ValueError(f"Unknown node type: {node_type}")
