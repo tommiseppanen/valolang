@@ -6,6 +6,7 @@ from token_parser import TokenParser
 lexer = Lexer(rules)
 
 text = """
+print("Hello world {1+2}")
 def add(x, y) { x + y }
 def multiply(x, y) { x * y }
 multiply(add(2, 3), 2)

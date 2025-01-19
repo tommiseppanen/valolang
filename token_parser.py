@@ -1,3 +1,6 @@
+from lexer import Lexer, rules
+
+
 class TokenParser:
     def __init__(self, tokens):
         self.tokens = tokens
@@ -73,6 +76,13 @@ class TokenParser:
                 return self.function_call()
             else:
                 return 'IDENTIFIER', self.eat('IDENTIFIER').value
+        elif token.type == 'STRING':
+            # Check if the string contains placeholders `{}` for interpolation
+            string_value = self.eat('STRING').value[1:-1]  # Remove quotes
+            if '{' in string_value and '}' in string_value:
+                return self.parse_interpolated_string(string_value)
+            else:
+                return 'STRING', string_value
         elif token.type == 'LPAREN':
             # Handle parentheses for grouping
             self.eat('LPAREN')
@@ -88,3 +98,44 @@ class TokenParser:
                 self.eat("COMMA")
                 args.append(self.expression())
         return args
+
+    def parse_interpolated_string(self, string):
+        parts = []
+        current = ''
+        i = 0
+
+        while i < len(string):
+            if string[i] == '{':
+                # Flush the current literal part
+                if current:
+                    parts.append(current)
+                    current = ''
+
+                # Parse the embedded expression inside {}
+                i += 1
+                expr_start = i
+                while i < len(string) and string[i] != '}':
+                    i += 1
+                if i >= len(string):
+                    raise SyntaxError("Unclosed interpolation brace in string")
+
+                embedded_expr = string[expr_start:i]
+                parts.append(self.expression_from_string(embedded_expr))
+            else:
+                current += string[i]
+            i += 1
+
+        # Flush the final literal part
+        if current:
+            parts.append(current)
+
+        return 'INTERPOLATED_STRING', parts
+
+    def expression_from_string(self, expression_code):
+        lexer = Lexer(rules)
+        tokens = lexer.tokenize(expression_code)
+
+        parser = TokenParser(tokens)
+        ast = parser.expression()  # Use `expression()` to get a single expression
+
+        return ast

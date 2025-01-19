@@ -54,4 +54,5 @@ rules = [
     (r"\}", "RBRACE"),  # Right curly brace
     (r"=", "ASSIGN"),  # Assignment
     (r"[;]", "SEMICOLON"),  # Semicolon
+    (r'"([^"\\]*(\\.[^"\\]*)*)"', 'STRING'),  # Strings (including escaped quotes)
 ]

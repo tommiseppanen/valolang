@@ -43,9 +43,30 @@ class Evaluator:
             _, name, params, body = node
             self.functions[name] = (params, body)
 
+        elif node_type == 'STRING':
+            return node[1]
+
+        elif node_type == 'INTERPOLATED_STRING':
+            parts = node[1]
+            result = ''
+            for part in parts:
+                if isinstance(part, tuple):
+                    # Evaluate embedded expression
+                    result += str(self.eval_node(part, context))
+                else:
+                    # Append literal part
+                    result += part
+            return result
+
         elif node_type == 'FUNCTION_CALL':
             # Evaluate function call: ('FUNCTION_CALL', name, args)
             _, name, args = node
+
+            # Handle built-in print function
+            if name == 'print':
+                evaluated_args = [self.eval_node(arg, context) for arg in args]
+                print(*evaluated_args)
+                return None
 
             # Lookup the function definition
             if name not in self.functions:
