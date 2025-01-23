@@ -23,6 +23,13 @@ class TokenParser:
             statements.append(self.statement())
         return statements
 
+    def assignment(self):
+        identifier = self.eat("IDENTIFIER").value
+        self.eat("ASSIGN")
+        value = self.expression()
+        #self.eat("NEWLINE")
+        return "ASSIGNMENT", identifier, value
+
     def function_definition(self):
         self.eat("DEF")
         name = self.eat("IDENTIFIER").value
@@ -46,10 +53,17 @@ class TokenParser:
     def statement(self):
         if self.current_token().type == 'DEF':
             return self.function_definition()
+        elif self.current_token().type == 'IDENTIFIER' and self.peek_next().type == 'ASSIGN':
+            return self.assignment()
         elif self.current_token().type == 'IDENTIFIER':
             return self.function_call()
         else:
             raise SyntaxError(f"Unexpected token {self.current_token()}")
+
+    def peek_next(self):
+        if self.pos + 1 < len(self.tokens):
+            return self.tokens[self.pos + 1]
+        return None
 
     def expression(self):
         node = self.term()

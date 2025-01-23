@@ -4,8 +4,9 @@ class Evaluator:
 
     def evaluate(self, ast):
         result = None
+        context = {}
         for node in ast:
-            result = self.eval_node(node, {})
+            result = self.eval_node(node, context)
         return result
 
     def eval_node(self, node, context):
@@ -42,6 +43,12 @@ class Evaluator:
             # Store function definition: ('FUNCTION_DEF', name, params, body)
             _, name, params, body = node
             self.functions[name] = (params, body)
+
+        elif node_type == 'ASSIGNMENT':
+            var_name = node[1]
+            value = self.eval_node(node[2], context)
+            context[var_name] = value
+            return value
 
         elif node_type == 'STRING':
             return node[1]
