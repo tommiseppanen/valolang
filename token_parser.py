@@ -27,7 +27,6 @@ class TokenParser:
         identifier = self.eat("IDENTIFIER").value
         self.eat("ASSIGN")
         value = self.expression()
-        #self.eat("NEWLINE")
         return "ASSIGNMENT", identifier, value
 
     def function_definition(self):
