@@ -1,9 +1,9 @@
 from evaluator import Evaluator
-from lexer import Lexer, rules
+from lexer import Lexer
 from token_parser import TokenParser
 
 
-lexer = Lexer(rules)
+
 
 text = """
 print("Hello world")
@@ -13,8 +13,8 @@ def add(x, y) { x + y }
 def multiply(x, y) { x * y }
 multiply(add(2, 3), 2)
 """
-
-tokens = lexer.tokenize(text)
+lexer = Lexer(text)
+tokens = lexer.tokenize()
 for token in tokens:
     print(token)
 

@@ -1,4 +1,4 @@
-from lexer import Lexer, rules
+from lexer import Lexer
 
 
 class TokenParser:
@@ -145,8 +145,8 @@ class TokenParser:
         return 'INTERPOLATED_STRING', parts
 
     def expression_from_string(self, expression_code):
-        lexer = Lexer(rules)
-        tokens = lexer.tokenize(expression_code)
+        lexer = Lexer(expression_code)
+        tokens = lexer.tokenize()
 
         parser = TokenParser(tokens)
         ast = parser.expression()  # Use `expression()` to get a single expression
