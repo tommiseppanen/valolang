@@ -15,8 +15,6 @@ class Lexer:
             (r"\(", "LPAREN"),  # Left parenthesis
             (r"\)", "RPAREN"),  # Right parenthesis
             (r",", "COMMA"),  # Comma
-            (r"\{", "LBRACE"),  # Left curly brace
-            (r"\}", "RBRACE"),  # Right curly brace
             (r"=", "ASSIGN"),  # Assignment
             (r"[;]", "SEMICOLON"),  # Semicolon
             (r'"([^"\\]*(\\.[^"\\]*)*)"', 'STRING'),  # Strings (including escaped quotes)

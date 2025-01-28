@@ -15,7 +15,18 @@ print("Value of a: {a}")
 
 Functions
 ```
-def add(x, y) { x + y }
-def multiply(x, y) { x * y }
+def add(x, y)
+    x + y
+def multiply(x, y)
+    x * y
 multiply(add(2, 3), 2)
+```
+
+If statement
+```
+a = 1 + 2
+if a == 3
+    print("Hello there!")
+else
+    print("Value of a: {a}")
 ```

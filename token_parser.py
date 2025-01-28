@@ -35,9 +35,9 @@ class TokenParser:
         self.eat("LPAREN")
         parameters = self.parameter_list()
         self.eat("RPAREN")
-        self.eat("LBRACE")
+        self.eat("INDENT")
         body = self.expression()
-        self.eat("RBRACE")
+        self.eat("DEDENT")
         return "FUNCTION_DEF", name, parameters, body
 
     def parameter_list(self):
