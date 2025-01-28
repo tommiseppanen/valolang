@@ -10,6 +10,7 @@ class Lexer:
             (r"def", "DEF"),  # Function definition keyword
             (r"if", "IF"),  # Function definition keyword
             (r"else", "ELSE"),  # Function definition keyword
+            (r"while", "WHILE"),  # Function definition keyword
             (r"[a-zA-Z_]\w*", "IDENTIFIER"),  # Identifiers
             (r"[+\-*<>]|==", "OPERATOR"),  # Arithmetic operators
             (r"\(", "LPAREN"),  # Left parenthesis

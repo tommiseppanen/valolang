@@ -9,6 +9,12 @@ class Evaluator:
             result = self.eval_node(node, context)
         return result
 
+    def eval_nodes(self, ast, context):
+        result = None
+        for node in ast:
+            result = self.eval_node(node, context)
+        return result
+
     def eval_node(self, node, context):
         node_type = node[0]
 
@@ -24,6 +30,12 @@ class Evaluator:
             elif false_block:
                 return self.eval_node(false_block, context)
             return None
+
+        elif node_type == "WHILE":
+            _, condition, body = node
+
+            while self.eval_node(condition, context):
+                self.eval_nodes(body, context)
 
         elif node_type == 'IDENTIFIER':
             # Resolve variable name in the context

@@ -6,6 +6,11 @@ from token_parser import TokenParser
 
 
 text = """
+i = 0
+while i < 5
+    print(i)
+    i = i + 1
+
 print("Hello world")
 a = 1 + 2
 if a == 3

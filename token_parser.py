@@ -19,7 +19,7 @@ class TokenParser:
 
     def parse(self):
         statements = []
-        while self.current_token() is not None:
+        while self.current_token() is not None and self.current_token().type != "DEDENT":
             statements.append(self.statement())
         return statements
 
@@ -54,6 +54,8 @@ class TokenParser:
             return self.function_definition()
         elif self.current_token().type == 'IF':
             return self.if_statement()
+        elif self.current_token().type == 'WHILE':
+            return self.while_statement()
         elif self.current_token().type == 'IDENTIFIER' and self.peek_next().type == 'ASSIGN':
             return self.assignment()
         elif self.current_token().type == 'IDENTIFIER':
@@ -65,11 +67,8 @@ class TokenParser:
         self.eat("IF")
         condition = self.expression()
 
-        # Expect and consume INDENT
         self.eat("INDENT")
         true_block = self.statement()
-
-        # Expect and consume DEDENT
         self.eat("DEDENT")
 
         # Handle optional else block
@@ -81,6 +80,16 @@ class TokenParser:
             self.eat("DEDENT")
 
         return "IF", condition, true_block, false_block
+
+    def while_statement(self):
+        self.eat("WHILE")
+        condition = self.expression()
+
+        self.eat("INDENT")
+        body = self.parse()
+        self.eat("DEDENT")
+
+        return "WHILE", condition, body
 
     def peek_next(self):
         if self.pos + 1 < len(self.tokens):
