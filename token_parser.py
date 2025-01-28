@@ -52,12 +52,35 @@ class TokenParser:
     def statement(self):
         if self.current_token().type == 'DEF':
             return self.function_definition()
+        elif self.current_token().type == 'IF':
+            return self.if_statement()
         elif self.current_token().type == 'IDENTIFIER' and self.peek_next().type == 'ASSIGN':
             return self.assignment()
         elif self.current_token().type == 'IDENTIFIER':
             return self.function_call()
         else:
             raise SyntaxError(f"Unexpected token {self.current_token()}")
+
+    def if_statement(self):
+        self.eat("IF")
+        condition = self.expression()
+
+        # Expect and consume INDENT
+        self.eat("INDENT")
+        true_block = self.statement()
+
+        # Expect and consume DEDENT
+        self.eat("DEDENT")
+
+        # Handle optional else block
+        false_block = None
+        if self.current_token() and self.current_token().type == "ELSE":
+            self.eat("ELSE")
+            self.eat("INDENT")
+            false_block = self.statement()
+            self.eat("DEDENT")
+
+        return "IF", condition, true_block, false_block
 
     def peek_next(self):
         if self.pos + 1 < len(self.tokens):

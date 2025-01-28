@@ -8,8 +8,10 @@ class Lexer:
             (r"[ \t]+", None),
             (r"\d+", "NUMBER"),  # Number
             (r"def", "DEF"),  # Function definition keyword
+            (r"if", "IF"),  # Function definition keyword
+            (r"else", "ELSE"),  # Function definition keyword
             (r"[a-zA-Z_]\w*", "IDENTIFIER"),  # Identifiers
-            (r"[+\-*/]", "OPERATOR"),  # Arithmetic operators
+            (r"[+\-*<>]|==", "OPERATOR"),  # Arithmetic operators
             (r"\(", "LPAREN"),  # Left parenthesis
             (r"\)", "RPAREN"),  # Right parenthesis
             (r",", "COMMA"),  # Comma

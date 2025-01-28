@@ -15,6 +15,16 @@ class Evaluator:
         if node_type == "NUMBER":
             return float(node[1]) if "." in node[1] else int(node[1])
 
+        elif node_type == "IF":
+            _, condition, true_block, false_block = node
+            condition_result = self.eval_node(condition, context)
+
+            if condition_result:
+                return self.eval_node(true_block, context)
+            elif false_block:
+                return self.eval_node(false_block, context)
+            return None
+
         elif node_type == 'IDENTIFIER':
             # Resolve variable name in the context
             name = node[1]
@@ -36,6 +46,12 @@ class Evaluator:
                 return left_value * right_value
             elif operator == "/":
                 return left_value / right_value
+            elif operator == ">":
+                return left_value > right_value
+            elif operator == "<":
+                return left_value < right_value
+            elif operator == "==":
+                return left_value == right_value
             else:
                 raise ValueError(f"Unknown operator: {operator}")
 
