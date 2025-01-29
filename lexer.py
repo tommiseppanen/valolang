@@ -6,18 +6,18 @@ class Lexer:
     def __init__(self, source):
         token_rules = [
             (r"[ \t]+", None),
-            (r"\d+", "NUMBER"),  # Number
-            (r"def", "DEF"),  # Function definition keyword
-            (r"if", "IF"),  # Function definition keyword
-            (r"else", "ELSE"),  # Function definition keyword
-            (r"while", "WHILE"),  # Function definition keyword
-            (r"[a-zA-Z_]\w*", "IDENTIFIER"),  # Identifiers
+            (r"\d+", "NUMBER"),
+            (r"def", "DEF"),  # Function definitiions
+            (r"if", "IF"),
+            (r"else", "ELSE"),
+            (r"while", "WHILE"),
+            (r"return", "RETURN"),
+            (r"[a-zA-Z_]\w*", "IDENTIFIER"),  # Variable/function names
             (r"[+\-*<>]|==", "OPERATOR"),  # Arithmetic operators
             (r"\(", "LPAREN"),  # Left parenthesis
             (r"\)", "RPAREN"),  # Right parenthesis
-            (r",", "COMMA"),  # Comma
-            (r"=", "ASSIGN"),  # Assignment
-            (r"[;]", "SEMICOLON"),  # Semicolon
+            (r",", "COMMA"),
+            (r"=", "ASSIGN"), # Variable assignment
             (r'"([^"\\]*(\\.[^"\\]*)*)"', 'STRING'),  # Strings (including escaped quotes)
         ]
         self.rules = [

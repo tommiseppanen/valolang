@@ -1,19 +1,18 @@
+from ReturnException import ReturnException
+
+
 class Evaluator:
     def __init__(self):
         self.functions = {}  # Function table: {name: (params, body)}
 
     def evaluate(self, ast):
-        result = None
         context = {}
         for node in ast:
-            result = self.eval_node(node, context)
-        return result
+            self.eval_node(node, context)
 
     def eval_nodes(self, ast, context):
-        result = None
         for node in ast:
-            result = self.eval_node(node, context)
-        return result
+            self.eval_node(node, context)
 
     def eval_node(self, node, context):
         node_type = node[0]
@@ -26,9 +25,9 @@ class Evaluator:
             condition_result = self.eval_node(condition, context)
 
             if condition_result:
-                return self.eval_node(true_block, context)
+                return self.eval_nodes(true_block, context)
             elif false_block:
-                return self.eval_node(false_block, context)
+                return self.eval_nodes(false_block, context)
             return None
 
         elif node_type == "WHILE":
@@ -36,6 +35,10 @@ class Evaluator:
 
             while self.eval_node(condition, context):
                 self.eval_nodes(body, context)
+
+        elif node_type == "RETURN_STATEMENT":
+            _, return_value = node
+            raise ReturnException(self.eval_node(return_value, context) if return_value else None)
 
         elif node_type == 'IDENTIFIER':
             # Resolve variable name in the context
@@ -120,7 +123,10 @@ class Evaluator:
             function_context = {param: value for param, value in zip(params, arg_values)}
 
             # Evaluate the function body in its own context
-            return self.eval_node(body, function_context)
+            try:
+                return self.eval_nodes(body, function_context)
+            except ReturnException as ex:
+                return ex.value
 
         else:
             raise ValueError(f"Unknown node type: {node_type}")

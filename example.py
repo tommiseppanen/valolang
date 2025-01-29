@@ -11,7 +11,6 @@ while i < 5
     print(i)
     i = i + 1
 
-print("Hello world")
 a = 1 + 2
 if a == 3
     print("Hello there!")
@@ -19,12 +18,12 @@ else
     print("Value of a: {a}")
     
 def add(x, y)
-    x + y
+    return x + y
 
 def multiply(x, y) 
-    x * y
+    return x * y
     
-multiply(add(2, 3), 2)
+print(multiply(add(2, 3), 2))
 """
 lexer = Lexer(text)
 tokens = lexer.tokenize()
@@ -36,4 +35,4 @@ ast = parser.parse()
 print(ast)
 
 evaluator = Evaluator()
-print(f"Result: {evaluator.evaluate(ast)}")
+evaluator.evaluate(ast)

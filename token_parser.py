@@ -36,7 +36,7 @@ class TokenParser:
         parameters = self.parameter_list()
         self.eat("RPAREN")
         self.eat("INDENT")
-        body = self.expression()
+        body = self.parse()
         self.eat("DEDENT")
         return "FUNCTION_DEF", name, parameters, body
 
@@ -60,6 +60,8 @@ class TokenParser:
             return self.assignment()
         elif self.current_token().type == 'IDENTIFIER':
             return self.function_call()
+        elif self.current_token().type == 'RETURN':
+            return self.return_statement()
         else:
             raise SyntaxError(f"Unexpected token {self.current_token()}")
 
@@ -68,7 +70,7 @@ class TokenParser:
         condition = self.expression()
 
         self.eat("INDENT")
-        true_block = self.statement()
+        true_block = self.parse()
         self.eat("DEDENT")
 
         # Handle optional else block
@@ -76,7 +78,7 @@ class TokenParser:
         if self.current_token() and self.current_token().type == "ELSE":
             self.eat("ELSE")
             self.eat("INDENT")
-            false_block = self.statement()
+            false_block = self.parse()
             self.eat("DEDENT")
 
         return "IF", condition, true_block, false_block
@@ -90,6 +92,16 @@ class TokenParser:
         self.eat("DEDENT")
 
         return "WHILE", condition, body
+
+    def return_statement(self):
+        self.eat("RETURN")
+
+        if self.current_token() and self.current_token().type in {"NUMBER", "IDENTIFIER", "LPAREN"}:
+            return_value = self.expression()
+        else:
+            return_value = None  # Allow return without a value
+
+        return "RETURN_STATEMENT", return_value
 
     def peek_next(self):
         if self.pos + 1 < len(self.tokens):

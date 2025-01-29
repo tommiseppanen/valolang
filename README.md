@@ -16,9 +16,9 @@ print("Value of a: {a}")
 Functions
 ```
 def add(x, y)
-    x + y
+    return x + y
 def multiply(x, y)
-    x * y
+    return x * y
 multiply(add(2, 3), 2)
 ```
 
@@ -29,4 +29,12 @@ if a == 3
     print("Hello there!")
 else
     print("Value of a: {a}")
+```
+
+While statement
+```
+i = 0
+while i < 5
+    print(i)
+    i = i + 1
 ```
