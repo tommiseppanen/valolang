@@ -34,7 +34,11 @@ else
 While statement
 ```
 i = 0
-while i < 5
-    print(i)
+while i < 10
     i = i + 1
+    if i == 3
+        continue
+    if i == 6
+        break
+    print(i)
 ```

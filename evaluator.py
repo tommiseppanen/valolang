@@ -1,3 +1,5 @@
+from BreakException import BreakException
+from ContinueException import ContinueException
 from ReturnException import ReturnException
 
 
@@ -34,11 +36,23 @@ class Evaluator:
             _, condition, body = node
 
             while self.eval_node(condition, context):
-                self.eval_nodes(body, context)
+                try:
+                    self.eval_nodes(body, context)
+                except BreakException:
+                    break
+                except ContinueException:
+                    continue
+
 
         elif node_type == "RETURN_STATEMENT":
             _, return_value = node
             raise ReturnException(self.eval_node(return_value, context) if return_value else None)
+
+        elif node_type == "CONTINUE":
+            raise ContinueException()
+
+        elif node_type == "BREAK":
+            raise BreakException()
 
         elif node_type == 'IDENTIFIER':
             # Resolve variable name in the context

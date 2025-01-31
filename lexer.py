@@ -11,6 +11,8 @@ class Lexer:
             (r"if", "IF"),
             (r"else", "ELSE"),
             (r"while", "WHILE"),
+            (r"break", "BREAK"),
+            (r"continue", "CONTINUE"),
             (r"return", "RETURN"),
             (r"[a-zA-Z_]\w*", "IDENTIFIER"),  # Variable/function names
             (r"[+\-*<>]|==", "OPERATOR"),  # Arithmetic operators

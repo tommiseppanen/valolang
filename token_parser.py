@@ -56,6 +56,12 @@ class TokenParser:
             return self.if_statement()
         elif self.current_token().type == 'WHILE':
             return self.while_statement()
+        elif self.current_token().type == 'BREAK':
+            self.eat("BREAK")
+            return "BREAK",
+        elif self.current_token().type == 'CONTINUE':
+            self.eat("CONTINUE")
+            return "CONTINUE",
         elif self.current_token().type == 'IDENTIFIER' and self.peek_next().type == 'ASSIGN':
             return self.assignment()
         elif self.current_token().type == 'IDENTIFIER':
