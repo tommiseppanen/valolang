@@ -62,9 +62,13 @@ class TokenParser:
         elif self.current_token().type == 'CONTINUE':
             self.eat("CONTINUE")
             return "CONTINUE",
-        elif self.current_token().type == 'IDENTIFIER' and self.peek_next().type == 'ASSIGN':
-            return self.assignment()
+        elif self.current_token().type == 'LBRACKET':
+            return self.list_literal()
         elif self.current_token().type == 'IDENTIFIER':
+            if self.peek_next().type == 'ASSIGN':
+                return self.assignment()
+            elif self.peek_next().type == 'DOT':
+                return self.method_call()
             return self.function_call()
         elif self.current_token().type == 'RETURN':
             return self.return_statement()
@@ -133,10 +137,17 @@ class TokenParser:
         token = self.current_token()
         if token.type == 'NUMBER':
             return 'NUMBER', self.eat('NUMBER').value
+        elif token.type == 'LBRACKET':
+            return self.list_literal()
         elif token.type == 'IDENTIFIER':
             # Look ahead to check if it's a function call
-            if self.pos + 1 < len(self.tokens) and self.tokens[self.pos + 1].type == 'LPAREN':
+            next_node = self.peek_next()
+            if next_node and next_node.type == 'LPAREN':
                 return self.function_call()
+            elif next_node and next_node.type == 'LBRACKET':
+                return self.list_indexing()
+            elif next_node and next_node.type == 'DOT':
+                return self.method_call()
             else:
                 return 'IDENTIFIER', self.eat('IDENTIFIER').value
         elif token.type == 'STRING':
@@ -161,6 +172,35 @@ class TokenParser:
                 self.eat("COMMA")
                 args.append(self.expression())
         return args
+
+    def list_literal(self):
+        self.eat("LBRACKET")
+        elements = []
+
+        while self.current_token().type != "RBRACKET":
+            elements.append(self.expression())
+            if self.current_token().type == "COMMA":
+                self.eat("COMMA")
+
+        self.eat("RBRACKET")
+        return "LIST_LITERAL", elements
+
+    def list_indexing(self):
+        list_name = self.eat("IDENTIFIER")
+        self.eat("LBRACKET")
+        index = self.expression()
+        self.eat("RBRACKET")
+        return "LIST_INDEX", list_name.value, index
+
+    def method_call(self):
+        object_name = self.eat("IDENTIFIER")
+        self.eat("DOT")
+        method = self.eat("IDENTIFIER")
+        self.eat("LPAREN")
+        value = self.expression()
+        self.eat("RPAREN")
+
+        return "METHOD_CALL", method.value, object_name.value, value
 
     def parse_interpolated_string(self, string):
         parts = []

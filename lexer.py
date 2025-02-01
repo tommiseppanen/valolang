@@ -16,9 +16,12 @@ class Lexer:
             (r"return", "RETURN"),
             (r"[a-zA-Z_]\w*", "IDENTIFIER"),  # Variable/function names
             (r"[+\-*<>]|==", "OPERATOR"),  # Arithmetic operators
-            (r"\(", "LPAREN"),  # Left parenthesis
-            (r"\)", "RPAREN"),  # Right parenthesis
+            (r"\(", "LPAREN"),
+            (r"\)", "RPAREN"),
+            (r"\[", "LBRACKET"),
+            (r"\]", "RBRACKET"),
             (r",", "COMMA"),
+            (r"\.", "DOT"),
             (r"=", "ASSIGN"), # Variable assignment
             (r'"([^"\\]*(\\.[^"\\]*)*)"', 'STRING'),  # Strings (including escaped quotes)
         ]

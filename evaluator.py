@@ -54,6 +54,20 @@ class Evaluator:
         elif node_type == "BREAK":
             raise BreakException()
 
+        elif node_type == "LIST_LITERAL":
+            _, elements = node
+            return [self.eval_node(element, context) for element in elements]
+
+        elif node_type == "LIST_INDEX":
+            _, list_name, index = node
+            return context[list_name][self.eval_node(index, context)]
+
+        elif node_type == "METHOD_CALL":
+            _, method, object_name, value = node
+            if method == "length":
+                return len(context[object_name])
+            raise NameError(f"Undefined method '{method}'")
+
         elif node_type == 'IDENTIFIER':
             # Resolve variable name in the context
             name = node[1]

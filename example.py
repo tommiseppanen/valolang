@@ -6,6 +6,9 @@ from token_parser import TokenParser
 
 
 text = """
+my_list = ["test", "abc", "text"]
+print(my_list[2])
+print(my_list.length())
 i = 0
 while i < 10
     i = i + 1
