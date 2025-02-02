@@ -42,3 +42,11 @@ while i < 10
         break
     print(i)
 ```
+
+Lists
+```
+x = ["test", "abc", "text"]
+x[2] = "new value"
+print(x)
+print(x.length())
+```

@@ -69,6 +69,8 @@ class TokenParser:
                 return self.assignment()
             elif self.peek_next().type == 'DOT':
                 return self.method_call()
+            elif self.peek_next().type == 'LBRACKET':
+                return self.index_assignment()
             return self.function_call()
         elif self.current_token().type == 'RETURN':
             return self.return_statement()
@@ -191,6 +193,15 @@ class TokenParser:
         index = self.expression()
         self.eat("RBRACKET")
         return "LIST_INDEX", list_name.value, index
+
+    def index_assignment(self):
+        list_name = self.eat("IDENTIFIER")
+        self.eat("LBRACKET")
+        index = self.expression()
+        self.eat("RBRACKET")
+        self.eat("ASSIGN")
+        value = self.expression()
+        return "INDEX_ASSIGNMENT", list_name.value, index, value
 
     def method_call(self):
         object_name = self.eat("IDENTIFIER")

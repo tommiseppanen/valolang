@@ -6,9 +6,11 @@ from token_parser import TokenParser
 
 
 text = """
-my_list = ["test", "abc", "text"]
-print(my_list[2])
-print(my_list.length())
+x = ["test", "abc", "text"]
+print(x)
+x[2] = "new value"
+print(x)
+print(x.length())
 i = 0
 while i < 10
     i = i + 1

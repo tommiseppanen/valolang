@@ -62,6 +62,11 @@ class Evaluator:
             _, list_name, index = node
             return context[list_name][self.eval_node(index, context)]
 
+        elif node_type == "INDEX_ASSIGNMENT":
+            _, list_name, index, value = node
+            context[list_name][self.eval_node(index, context)] = self.eval_node(value, context)
+            return None
+
         elif node_type == "METHOD_CALL":
             _, method, object_name, value = node
             if method == "length":
