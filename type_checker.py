@@ -17,6 +17,15 @@ class TypeChecker:
         elif stmt_type == "ASSIGNMENT":
             self.check_variable_assignment(stmt)
 
+        elif stmt_type == "FUNCTION_DEF":
+            self.check_function_definition(stmt)
+
+        elif stmt_type == "FUNCTION_CALL":
+            self.check_function_call(stmt)
+
+        elif stmt_type == "EXPRESSION_STATEMENT":
+            self.check_expression(stmt["expression"])
+
 
     def check_variable_declaration(self, stmt):
         var_name = stmt[2]
@@ -40,12 +49,44 @@ class TypeChecker:
             raise TypeError(f"Type mismatch in assignment: {var_name} expected {expected_type}, got {value_type}")
 
     def check_function_definition(self, stmt):
-        # TODO
-        return
+        func_name = stmt[1]
+        param_types = [param[0] for param in stmt[2]]
+        return_type = stmt[4]
+
+        self.function_signatures[func_name] = {
+            "params": param_types,
+            "return_type": return_type,
+        }
+
+        previous_scope = self.scope.copy()
+        self.scope = {param[1]: param[0] for param in stmt[2]}
+        self.current_function = {"name": func_name, "return_type": return_type}
+
+        for sub_stmt in stmt[2]:
+            self.check_statement(sub_stmt)
+
+        # Restore previous scope
+        self.scope = previous_scope
+        self.current_function = None
 
     def check_function_call(self, stmt):
-        # TODO
-        return "int"
+        func_name = stmt[1]
+        if func_name == "print":
+            return "void"
+
+        if func_name not in self.function_signatures:
+            raise TypeError(f"Undefined function: {func_name}")
+
+        expected_params = self.function_signatures[func_name]["params"]
+        given_args = stmt[2]
+
+        if len(expected_params) != len(given_args):
+            raise TypeError(f"Function {func_name} expects {len(expected_params)} arguments, got {len(given_args)}")
+
+        for (expected_type, arg_expr) in zip(expected_params, given_args):
+            arg_type = self.check_expression(arg_expr)
+            if arg_type != expected_type:
+                raise TypeError(f"Argument type mismatch for {func_name}: Expected {expected_type}, got {arg_type}")
 
     def check_expression(self, expr):
         expr_type = expr[0]

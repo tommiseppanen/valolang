@@ -21,10 +21,10 @@ if a == 3
 else
     print("Value of a: {a}")
 
-def add(x, y)
+int add(int x, int y)
     return x + y
 
-def multiply(x, y) 
+int multiply(int x, int y) 
     return x * y
     
 print(multiply(add(2, 3), 2))

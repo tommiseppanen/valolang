@@ -2,6 +2,8 @@ from lexer import Lexer
 
 
 class TokenParser:
+    TYPES = ["TYPE_INT", "TYPE_STRING"]
+    DEFAULT_VALUES = [0, ""]
     def __init__(self, tokens):
         self.tokens = tokens
         self.pos = 0
@@ -25,6 +27,11 @@ class TokenParser:
         else:
             raise SyntaxError(f"Expected {token_types}, got {token}")
 
+    def peek(self, amount = 1):
+        if self.pos + amount < len(self.tokens):
+            return self.tokens[self.pos + amount]
+        return None
+
     def parse(self):
         statements = []
         while self.current_token() is not None and self.current_token().type != "DEDENT":
@@ -32,10 +39,13 @@ class TokenParser:
         return statements
 
     def variable_declaration(self):
-        type_token = self.eat_any(["TYPE_INT", "TYPE_STRING"])
+        type_token = self.eat_any(self.TYPES)
         identifier = self.eat("IDENTIFIER").value
-        self.eat("ASSIGN")
-        value = self.expression()
+        if self.current_token().type == "ASSIGN":
+            self.eat("ASSIGN")
+            value = self.expression()
+        else:
+            value = self.DEFAULT_VALUES[self.TYPES.index(type_token.type)]
         return "VAR_DECLARATION", type_token.value, identifier, value
 
     def assignment(self):
@@ -45,7 +55,7 @@ class TokenParser:
         return "ASSIGNMENT", identifier, value
 
     def function_definition(self):
-        self.eat("DEF")
+        return_type = self.eat_any(self.TYPES).value
         name = self.eat("IDENTIFIER").value
         self.eat("LPAREN")
         parameters = self.parameter_list()
@@ -53,21 +63,20 @@ class TokenParser:
         self.eat("INDENT")
         body = self.parse()
         self.eat("DEDENT")
-        return "FUNCTION_DEF", name, parameters, body
+        return "FUNCTION_DEF", name, parameters, body, return_type,
 
     def parameter_list(self):
         parameters = []
-        if self.current_token().type == "IDENTIFIER":
-            parameters.append(self.eat("IDENTIFIER").value)
-            while self.current_token() and self.current_token().type == "COMMA":
+        while self.current_token().type != "RPAREN":
+            parameter_type = self.eat_any(self.TYPES).value
+            parameter_name = self.eat("IDENTIFIER").value
+            parameters.append((parameter_type, parameter_name))
+            if self.current_token().type != "RPAREN":
                 self.eat("COMMA")
-                parameters.append(self.eat("IDENTIFIER").value)
         return parameters
 
     def statement(self):
-        if self.current_token().type == 'DEF':
-            return self.function_definition()
-        elif self.current_token().type == 'IF':
+        if self.current_token().type == 'IF':
             return self.if_statement()
         elif self.current_token().type == 'WHILE':
             return self.while_statement()
@@ -80,13 +89,16 @@ class TokenParser:
         elif self.current_token().type == 'LBRACKET':
             return self.list_literal()
         elif self.current_token().type in ["TYPE_INT", "TYPE_STRING"]:
-            return self.variable_declaration()
+            if self.peek().type == 'IDENTIFIER' and self.peek(2).type == 'LPAREN':
+                return self.function_definition()
+            else:
+                return self.variable_declaration()
         elif self.current_token().type == 'IDENTIFIER':
-            if self.peek_next().type == 'ASSIGN':
+            if self.peek().type == 'ASSIGN':
                 return self.assignment()
-            elif self.peek_next().type == 'DOT':
+            elif self.peek().type == 'DOT':
                 return self.method_call()
-            elif self.peek_next().type == 'LBRACKET':
+            elif self.peek().type == 'LBRACKET':
                 return self.index_assignment()
             return self.function_call()
         elif self.current_token().type == 'RETURN':
@@ -132,11 +144,6 @@ class TokenParser:
 
         return "RETURN_STATEMENT", return_value
 
-    def peek_next(self):
-        if self.pos + 1 < len(self.tokens):
-            return self.tokens[self.pos + 1]
-        return None
-
     def expression(self):
         node = self.term()
         while self.current_token() and self.current_token().type == 'OPERATOR':
@@ -160,7 +167,7 @@ class TokenParser:
             return self.list_literal()
         elif token.type == 'IDENTIFIER':
             # Look ahead to check if it's a function call
-            next_node = self.peek_next()
+            next_node = self.peek()
             if next_node and next_node.type == 'LPAREN':
                 return self.function_call()
             elif next_node and next_node.type == 'LBRACKET':

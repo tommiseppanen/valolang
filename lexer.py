@@ -7,7 +7,6 @@ class Lexer:
         token_rules = [
             (r"[ \t]+", None),
             (r"\d+", "NUMBER"),
-            (r"def", "DEF"),  # Function definitiions
             (r"if", "IF"),
             (r"else", "ELSE"),
             (r"while", "WHILE"),
