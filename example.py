@@ -6,12 +6,15 @@ from token_parser import TokenParser
 
 
 text = """
+int l = 0
+l = "asf"
+print(l)
 x = ["test", "abc", "text"]
 print(x)
 x[2] = "new value"
 print(x)
 print(x.length())
-i = 0
+int i = 0
 while i < 10
     i = i + 1
     if i == 3

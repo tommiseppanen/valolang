@@ -14,6 +14,8 @@ class Lexer:
             (r"break", "BREAK"),
             (r"continue", "CONTINUE"),
             (r"return", "RETURN"),
+            (r'int', "TYPE_INT"),
+            (r'string', "TYPE_STRING"),
             (r"[a-zA-Z_]\w*", "IDENTIFIER"),  # Variable/function names
             (r"[+\-*<>]|==", "OPERATOR"),  # Arithmetic operators
             (r"\(", "LPAREN"),

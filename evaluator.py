@@ -81,6 +81,12 @@ class Evaluator:
             else:
                 raise NameError(f"Undefined variable '{name}'")
 
+        elif node_type == "VAR_DECLARATION":
+            variable_name = node[2]
+            variable_value = self.eval_node(node[3], context)
+            context[variable_name] = variable_value
+            return variable_value
+
         elif node_type == "BIN_OP":
             _, operator, left_node, right_node = node
             left_value = self.eval_node(left_node, context)

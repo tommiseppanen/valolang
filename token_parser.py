@@ -17,11 +17,26 @@ class TokenParser:
         else:
             raise SyntaxError(f"Expected {token_type}, got {token}")
 
+    def eat_any(self, token_types):
+        token = self.current_token()
+        if token and token.type in token_types:
+            self.pos += 1
+            return token
+        else:
+            raise SyntaxError(f"Expected {token_types}, got {token}")
+
     def parse(self):
         statements = []
         while self.current_token() is not None and self.current_token().type != "DEDENT":
             statements.append(self.statement())
         return statements
+
+    def variable_declaration(self):
+        type_token = self.eat_any(["TYPE_INT", "TYPE_STRING"])
+        identifier = self.eat("IDENTIFIER").value
+        self.eat("ASSIGN")
+        value = self.expression()
+        return "VAR_DECLARATION", type_token.value, identifier, value
 
     def assignment(self):
         identifier = self.eat("IDENTIFIER").value
@@ -64,6 +79,8 @@ class TokenParser:
             return "CONTINUE",
         elif self.current_token().type == 'LBRACKET':
             return self.list_literal()
+        elif self.current_token().type in ["TYPE_INT", "TYPE_STRING"]:
+            return self.variable_declaration()
         elif self.current_token().type == 'IDENTIFIER':
             if self.peek_next().type == 'ASSIGN':
                 return self.assignment()
