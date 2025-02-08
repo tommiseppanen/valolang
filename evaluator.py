@@ -1,6 +1,4 @@
-from BreakException import BreakException
-from ContinueException import ContinueException
-from ReturnException import ReturnException
+from exceptions import BreakException, ContinueException, ReturnException
 
 
 class Evaluator:
