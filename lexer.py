@@ -13,8 +13,8 @@ class Lexer:
             (r"break", "BREAK"),
             (r"continue", "CONTINUE"),
             (r"return", "RETURN"),
-            (r'int', "TYPE_INT"),
-            (r'string', "TYPE_STRING"),
+            (r"int", "TYPE_INT"),
+            (r"string", "TYPE_STRING"),
             (r"[a-zA-Z_]\w*", "IDENTIFIER"),  # Variable/function names
             (r"[+\-*<>]|==", "OPERATOR"),  # Arithmetic operators
             (r"\(", "LPAREN"),
@@ -24,7 +24,7 @@ class Lexer:
             (r",", "COMMA"),
             (r"\.", "DOT"),
             (r"=", "ASSIGN"), # Variable assignment
-            (r'"([^"\\]*(\\.[^"\\]*)*)"', 'STRING'),  # Strings (including escaped quotes)
+            (r'"([^"\\]*(\\.[^"\\]*)*)"', "STRING"),  # Strings (including escaped quotes)
         ]
         self.rules = [
             (re.compile(pattern), token_type) for pattern, token_type in token_rules

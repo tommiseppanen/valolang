@@ -76,32 +76,32 @@ class TokenParser:
         return parameters
 
     def statement(self):
-        if self.current_token().type == 'IF':
+        if self.current_token().type == "IF":
             return self.if_statement()
-        elif self.current_token().type == 'WHILE':
+        elif self.current_token().type == "WHILE":
             return self.while_statement()
-        elif self.current_token().type == 'BREAK':
+        elif self.current_token().type == "BREAK":
             self.eat("BREAK")
             return "BREAK",
-        elif self.current_token().type == 'CONTINUE':
+        elif self.current_token().type == "CONTINUE":
             self.eat("CONTINUE")
             return "CONTINUE",
-        elif self.current_token().type == 'LBRACKET':
+        elif self.current_token().type == "LBRACKET":
             return self.list_literal()
         elif self.current_token().type in ["TYPE_INT", "TYPE_STRING"]:
-            if self.peek().type == 'IDENTIFIER' and self.peek(2).type == 'LPAREN':
+            if self.peek().type == "IDENTIFIER" and self.peek(2).type == "LPAREN":
                 return self.function_definition()
             else:
                 return self.variable_declaration()
-        elif self.current_token().type == 'IDENTIFIER':
-            if self.peek().type == 'ASSIGN':
+        elif self.current_token().type == "IDENTIFIER":
+            if self.peek().type == "ASSIGN":
                 return self.assignment()
-            elif self.peek().type == 'DOT':
+            elif self.peek().type == "DOT":
                 return self.method_call()
-            elif self.peek().type == 'LBRACKET':
+            elif self.peek().type == "LBRACKET":
                 return self.index_assignment()
             return self.function_call()
-        elif self.current_token().type == 'RETURN':
+        elif self.current_token().type == "RETURN":
             return self.return_statement()
         else:
             raise SyntaxError(f"Unexpected token {self.current_token()}")
@@ -146,10 +146,10 @@ class TokenParser:
 
     def expression(self):
         node = self.term()
-        while self.current_token() and self.current_token().type == 'OPERATOR':
-            op = self.eat('OPERATOR').value
+        while self.current_token() and self.current_token().type == "OPERATOR":
+            op = self.eat("OPERATOR").value
             right = self.term()
-            node = ('BIN_OP', op, node, right)
+            node = ("BIN_OP", op, node, right)
         return node
 
     def function_call(self):
@@ -161,33 +161,33 @@ class TokenParser:
 
     def term(self):
         token = self.current_token()
-        if token.type == 'NUMBER':
-            return 'NUMBER', self.eat('NUMBER').value
-        elif token.type == 'LBRACKET':
+        if token.type == "NUMBER":
+            return "NUMBER", self.eat("NUMBER").value
+        elif token.type == "LBRACKET":
             return self.list_literal()
-        elif token.type == 'IDENTIFIER':
+        elif token.type == "IDENTIFIER":
             # Look ahead to check if it's a function call
             next_node = self.peek()
-            if next_node and next_node.type == 'LPAREN':
+            if next_node and next_node.type == "LPAREN":
                 return self.function_call()
-            elif next_node and next_node.type == 'LBRACKET':
+            elif next_node and next_node.type == "LBRACKET":
                 return self.list_indexing()
-            elif next_node and next_node.type == 'DOT':
+            elif next_node and next_node.type == "DOT":
                 return self.method_call()
             else:
-                return 'IDENTIFIER', self.eat('IDENTIFIER').value
-        elif token.type == 'STRING':
+                return "IDENTIFIER", self.eat("IDENTIFIER").value
+        elif token.type == "STRING":
             # Check if the string contains placeholders `{}` for interpolation
-            string_value = self.eat('STRING').value[1:-1]  # Remove quotes
-            if '{' in string_value and '}' in string_value:
+            string_value = self.eat("STRING").value[1:-1]  # Remove quotes
+            if "{" in string_value and "}" in string_value:
                 return self.parse_interpolated_string(string_value)
             else:
-                return 'STRING', string_value
-        elif token.type == 'LPAREN':
+                return "STRING", string_value
+        elif token.type == "LPAREN":
             # Handle parentheses for grouping
-            self.eat('LPAREN')
+            self.eat("LPAREN")
             expr = self.expression()
-            self.eat('RPAREN')
+            self.eat("RPAREN")
             return expr
 
     def argument_list(self):
@@ -239,20 +239,20 @@ class TokenParser:
 
     def parse_interpolated_string(self, string):
         parts = []
-        current = ''
+        current = ""
         i = 0
 
         while i < len(string):
-            if string[i] == '{':
+            if string[i] == "{":
                 # Flush the current literal part
                 if current:
                     parts.append(current)
-                    current = ''
+                    current = ""
 
                 # Parse the embedded expression inside {}
                 i += 1
                 expr_start = i
-                while i < len(string) and string[i] != '}':
+                while i < len(string) and string[i] != "}":
                     i += 1
                 if i >= len(string):
                     raise SyntaxError("Unclosed interpolation brace in string")
@@ -267,7 +267,7 @@ class TokenParser:
         if current:
             parts.append(current)
 
-        return 'INTERPOLATED_STRING', parts
+        return "INTERPOLATED_STRING", parts
 
     def expression_from_string(self, expression_code):
         lexer = Lexer(expression_code)

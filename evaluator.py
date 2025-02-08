@@ -73,7 +73,7 @@ class Evaluator:
                 return len(context[object_name])
             raise NameError(f"Undefined method '{method}'")
 
-        elif node_type == 'IDENTIFIER':
+        elif node_type == "IDENTIFIER":
             # Resolve variable name in the context
             identifier_name = node[1]
             if identifier_name in context:
@@ -109,22 +109,22 @@ class Evaluator:
             else:
                 raise ValueError(f"Unknown operator: {operator}")
 
-        elif node_type == 'FUNCTION_DEF':
+        elif node_type == "FUNCTION_DEF":
             _, name, params, body, _ = node
             self.functions[name] = (params, body)
 
-        elif node_type == 'ASSIGNMENT':
+        elif node_type == "ASSIGNMENT":
             var_name = node[1]
             value = self.eval_node(node[2], context)
             context[var_name] = value
             return value
 
-        elif node_type == 'STRING':
+        elif node_type == "STRING":
             return node[1]
 
-        elif node_type == 'INTERPOLATED_STRING':
+        elif node_type == "INTERPOLATED_STRING":
             parts = node[1]
-            result = ''
+            result = ""
             for part in parts:
                 if isinstance(part, tuple):
                     # Evaluate embedded expression
@@ -134,12 +134,11 @@ class Evaluator:
                     result += part
             return result
 
-        elif node_type == 'FUNCTION_CALL':
-            # Evaluate function call: ('FUNCTION_CALL', name, args)
+        elif node_type == "FUNCTION_CALL":
             _, name, args = node
 
             # Handle built-in print function
-            if name == 'print':
+            if name == "print":
                 evaluated_args = [self.eval_node(arg, context) for arg in args]
                 print(*evaluated_args)
                 return None
