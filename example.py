@@ -28,7 +28,6 @@ int multiply(int x, int y)
     return x * y
     
 print(multiply(add(2, 3), 2))
-print("end")
 """
 
 text2 = """

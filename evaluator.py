@@ -75,11 +75,11 @@ class Evaluator:
 
         elif node_type == 'IDENTIFIER':
             # Resolve variable name in the context
-            name = node[1]
-            if name in context:
-                return context[name]
+            identifier_name = node[1]
+            if identifier_name in context:
+                return context[identifier_name]
             else:
-                raise NameError(f"Undefined variable '{name}'")
+                raise NameError(f"Undefined variable '{identifier_name}'")
 
         elif node_type == "VAR_DECLARATION":
             variable_name = node[2]
@@ -158,7 +158,7 @@ class Evaluator:
             arg_values = [self.eval_node(arg, context) for arg in args]
 
             # Create a new context for the function execution
-            function_context = {param: value for param, value in zip(params, arg_values)}
+            function_context = {param[1]: value for param, value in zip(params, arg_values)}
 
             # Evaluate the function body in its own context
             try:
