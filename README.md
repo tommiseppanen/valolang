@@ -15,9 +15,9 @@ print("Value of a: {a}")
 
 Functions
 ```
-int add(x, y)
+int add(int x, int y)
     return x + y
-int multiply(x, y)
+int multiply(int x, int y)
     return x * y
 print(multiply(add(2, 3), 2))
 ```
