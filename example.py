@@ -4,6 +4,10 @@ from token_parser import TokenParser
 from type_checker import TypeChecker
 
 text = """
+list<str> x = ["test", "abc", "text"]
+print(x)
+print(x.length())
+
 int l = 0
 print(l)
 int i = 0
@@ -31,11 +35,8 @@ print(multiply(add(2, 3), 2))
 """
 
 text2 = """
-x = ["test", "abc", "text"]
-print(x)
 x[2] = "new value"
 print(x)
-print(x.length())
 """
 lexer = Lexer(text)
 tokens = lexer.tokenize()

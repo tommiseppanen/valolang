@@ -48,6 +48,10 @@ class TypeChecker:
         declared_type = stmt[1]
         value_type = self.check_expression(stmt[3])
 
+        # Special handling for list type comparison
+        if declared_type[:4] == "list" and isinstance(value_type, list):
+            declared_type = [declared_type[5:-1]] * len(value_type)
+
         if declared_type != value_type:
             raise TypeError(f"Type mismatch in variable declaration: Expected {declared_type}, got {value_type}")
 
@@ -147,10 +151,16 @@ class TypeChecker:
             return "int"  # Assume all numbers are integers
 
         elif expr_type == "STRING":
-            return "string"
+            return "str"
 
         elif expr_type == "BOOLEAN":
             return "bool"
+
+        elif expr_type == "LIST_LITERAL":
+            list_item_types = []
+            for list_item in expr[1]:
+                list_item_types.append(self.check_expression(list_item))
+            return list_item_types
 
         elif expr_type == "IDENTIFIER":
             var_name = expr[1]
