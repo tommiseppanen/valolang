@@ -34,6 +34,14 @@ int multiply(int x, int y)
     return x * y
     
 print(multiply(add(2, 3), 2))
+
+int test(list<str> s)
+    return s.length()
+list<str> createList()
+    return ["1", "2", "3", "4"]
+void myPrintInt(int i)
+    print(i)
+myPrintInt(test(createList()))
 """
 
 lexer = Lexer(text)

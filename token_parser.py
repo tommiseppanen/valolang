@@ -2,7 +2,7 @@ from lexer import Lexer
 
 
 class TokenParser:
-    TYPES = ["TYPE_INT", "TYPE_STRING", "TYPE_LIST"]
+    TYPES = ["TYPE_INT", "TYPE_STRING", "TYPE_LIST", "TYPE_VOID"]
     DEFAULT_VALUES = [0, ""]
     def __init__(self, tokens):
         self.tokens = tokens
@@ -137,7 +137,7 @@ class TokenParser:
     def return_statement(self):
         self.eat("RETURN")
 
-        if self.current_token() and self.current_token().type in {"NUMBER", "STRING", "IDENTIFIER", "LPAREN"}:
+        if self.current_token() and self.current_token().type in {"NUMBER", "STRING", "IDENTIFIER", "LPAREN", "LBRACKET"}:
             return_value = self.expression()
         else:
             return_value = None  # Allow return without a value

@@ -51,14 +51,10 @@ class TypeChecker:
         declared_type = stmt[1]
         value_type = self.check_expression(stmt[3])
 
-        # Special handling for list type comparison
-        if declared_type[:4] == "list" and isinstance(value_type, list):
-            declared_type = [declared_type[5:-1]] * len(value_type)
-
         if declared_type != value_type:
             raise TypeError(f"Type mismatch in variable declaration: Expected {declared_type}, got {value_type}")
 
-        self.scope[var_name] = stmt[1]
+        self.scope[var_name] = declared_type
 
     def check_variable_assignment(self, stmt):
         var_name = stmt[1]
@@ -157,6 +153,14 @@ class TypeChecker:
             arg_type = self.check_expression(arg_expr)
             if arg_type != expected_type:
                 raise TypeError(f"Argument type mismatch for {func_name}: Expected {expected_type}, got {arg_type}")
+        return self.function_signatures[func_name]["return_type"]
+
+    def check_method_call(self, stmt):
+        method_name = stmt[1]
+        if method_name == "length":
+            return "int"
+
+        raise TypeError(f"Undefined method: {method_name}")
 
     def check_expression(self, expr):
         expr_type = expr[0]
@@ -174,7 +178,9 @@ class TypeChecker:
             list_item_types = []
             for list_item in expr[1]:
                 list_item_types.append(self.check_expression(list_item))
-            return list_item_types
+            if len(list_item_types) > 0 and [list_item_types[0]] * len(list_item_types) == list_item_types:
+                return f"list<{list_item_types[0]}>"
+            return "list<>"
 
         elif expr_type == "IDENTIFIER":
             var_name = expr[1]
@@ -207,6 +213,9 @@ class TypeChecker:
 
         elif expr_type == "FUNCTION_CALL":
             return self.check_function_call(expr)
+
+        elif expr_type == "METHOD_CALL":
+            return self.check_method_call(expr)
 
         else:
             raise TypeError(f"Unknown expression type: {expr_type}")

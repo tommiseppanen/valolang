@@ -15,6 +15,7 @@ class Lexer:
             (r"return", "RETURN"),
             (r"int", "TYPE_INT"),
             (r"str", "TYPE_STRING"),
+            (r"void", "TYPE_VOID"),
             (r"list\s*<\s*[a-zA-Z_][a-zA-Z0-9_]*\s*>", "TYPE_LIST"),
             (r"[a-zA-Z_]\w*", "IDENTIFIER"),  # Variable/function names
             (r"[+\-*<>]|==", "OPERATOR"),  # Arithmetic operators
