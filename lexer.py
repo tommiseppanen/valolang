@@ -56,6 +56,7 @@ class Lexer:
         # Emit DEDENT tokens for remaining indentation
         while len(self.indent_stack) > 1:
             self.indent_stack.pop()
+            self.tokens.append(LanguageToken(type="DEDENT", value=None, line=self.line, column=self.column))
         return self.tokens
 
     def handle_indentation(self, text_line):
