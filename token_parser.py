@@ -2,6 +2,8 @@ from lexer import Lexer
 
 
 class TokenParser:
+    TYPES = ["TYPE_INT", "TYPE_STRING", "TYPE_LIST", "TYPE_VOID"]
+    DEFAULT_VALUES = [0, ""]
     def __init__(self, tokens):
         self.tokens = tokens
         self.pos = 0
@@ -17,11 +19,34 @@ class TokenParser:
         else:
             raise SyntaxError(f"Expected {token_type}, got {token}")
 
+    def eat_any(self, token_types):
+        token = self.current_token()
+        if token and token.type in token_types:
+            self.pos += 1
+            return token
+        else:
+            raise SyntaxError(f"Expected {token_types}, got {token}")
+
+    def peek(self, amount = 1):
+        if self.pos + amount < len(self.tokens):
+            return self.tokens[self.pos + amount]
+        return None
+
     def parse(self):
         statements = []
         while self.current_token() is not None and self.current_token().type != "DEDENT":
             statements.append(self.statement())
         return statements
+
+    def variable_declaration(self):
+        type_token = self.eat_any(self.TYPES)
+        identifier = self.eat("IDENTIFIER").value
+        if self.current_token().type == "ASSIGN":
+            self.eat("ASSIGN")
+            value = self.expression()
+        else:
+            value = self.DEFAULT_VALUES[self.TYPES.index(type_token.type)]
+        return "VAR_DECLARATION", type_token.value, identifier, value
 
     def assignment(self):
         identifier = self.eat("IDENTIFIER").value
@@ -30,7 +55,7 @@ class TokenParser:
         return "ASSIGNMENT", identifier, value
 
     def function_definition(self):
-        self.eat("DEF")
+        return_type = self.eat_any(self.TYPES).value
         name = self.eat("IDENTIFIER").value
         self.eat("LPAREN")
         parameters = self.parameter_list()
@@ -38,41 +63,45 @@ class TokenParser:
         self.eat("INDENT")
         body = self.parse()
         self.eat("DEDENT")
-        return "FUNCTION_DEF", name, parameters, body
+        return "FUNCTION_DEF", name, parameters, body, return_type,
 
     def parameter_list(self):
         parameters = []
-        if self.current_token().type == "IDENTIFIER":
-            parameters.append(self.eat("IDENTIFIER").value)
-            while self.current_token() and self.current_token().type == "COMMA":
+        while self.current_token().type != "RPAREN":
+            parameter_type = self.eat_any(self.TYPES).value
+            parameter_name = self.eat("IDENTIFIER").value
+            parameters.append((parameter_type, parameter_name))
+            if self.current_token().type != "RPAREN":
                 self.eat("COMMA")
-                parameters.append(self.eat("IDENTIFIER").value)
         return parameters
 
     def statement(self):
-        if self.current_token().type == 'DEF':
-            return self.function_definition()
-        elif self.current_token().type == 'IF':
+        if self.current_token().type == "IF":
             return self.if_statement()
-        elif self.current_token().type == 'WHILE':
+        elif self.current_token().type == "WHILE":
             return self.while_statement()
-        elif self.current_token().type == 'BREAK':
+        elif self.current_token().type == "BREAK":
             self.eat("BREAK")
             return "BREAK",
-        elif self.current_token().type == 'CONTINUE':
+        elif self.current_token().type == "CONTINUE":
             self.eat("CONTINUE")
             return "CONTINUE",
-        elif self.current_token().type == 'LBRACKET':
+        elif self.current_token().type == "LBRACKET":
             return self.list_literal()
-        elif self.current_token().type == 'IDENTIFIER':
-            if self.peek_next().type == 'ASSIGN':
+        elif self.current_token().type in self.TYPES:
+            if self.peek().type == "IDENTIFIER" and self.peek(2).type == "LPAREN":
+                return self.function_definition()
+            else:
+                return self.variable_declaration()
+        elif self.current_token().type == "IDENTIFIER":
+            if self.peek().type == "ASSIGN":
                 return self.assignment()
-            elif self.peek_next().type == 'DOT':
+            elif self.peek().type == "DOT":
                 return self.method_call()
-            elif self.peek_next().type == 'LBRACKET':
+            elif self.peek().type == "LBRACKET":
                 return self.index_assignment()
             return self.function_call()
-        elif self.current_token().type == 'RETURN':
+        elif self.current_token().type == "RETURN":
             return self.return_statement()
         else:
             raise SyntaxError(f"Unexpected token {self.current_token()}")
@@ -108,24 +137,19 @@ class TokenParser:
     def return_statement(self):
         self.eat("RETURN")
 
-        if self.current_token() and self.current_token().type in {"NUMBER", "IDENTIFIER", "LPAREN"}:
+        if self.current_token() and self.current_token().type in {"NUMBER", "STRING", "IDENTIFIER", "LPAREN", "LBRACKET"}:
             return_value = self.expression()
         else:
             return_value = None  # Allow return without a value
 
-        return "RETURN_STATEMENT", return_value
-
-    def peek_next(self):
-        if self.pos + 1 < len(self.tokens):
-            return self.tokens[self.pos + 1]
-        return None
+        return "RETURN", return_value
 
     def expression(self):
         node = self.term()
-        while self.current_token() and self.current_token().type == 'OPERATOR':
-            op = self.eat('OPERATOR').value
+        while self.current_token() and self.current_token().type == "OPERATOR":
+            op = self.eat("OPERATOR").value
             right = self.term()
-            node = ('BIN_OP', op, node, right)
+            node = ("BIN_OP", op, node, right)
         return node
 
     def function_call(self):
@@ -137,33 +161,33 @@ class TokenParser:
 
     def term(self):
         token = self.current_token()
-        if token.type == 'NUMBER':
-            return 'NUMBER', self.eat('NUMBER').value
-        elif token.type == 'LBRACKET':
+        if token.type == "NUMBER":
+            return "NUMBER", self.eat("NUMBER").value
+        elif token.type == "LBRACKET":
             return self.list_literal()
-        elif token.type == 'IDENTIFIER':
+        elif token.type == "IDENTIFIER":
             # Look ahead to check if it's a function call
-            next_node = self.peek_next()
-            if next_node and next_node.type == 'LPAREN':
+            next_node = self.peek()
+            if next_node and next_node.type == "LPAREN":
                 return self.function_call()
-            elif next_node and next_node.type == 'LBRACKET':
+            elif next_node and next_node.type == "LBRACKET":
                 return self.list_indexing()
-            elif next_node and next_node.type == 'DOT':
+            elif next_node and next_node.type == "DOT":
                 return self.method_call()
             else:
-                return 'IDENTIFIER', self.eat('IDENTIFIER').value
-        elif token.type == 'STRING':
+                return "IDENTIFIER", self.eat("IDENTIFIER").value
+        elif token.type == "STRING":
             # Check if the string contains placeholders `{}` for interpolation
-            string_value = self.eat('STRING').value[1:-1]  # Remove quotes
-            if '{' in string_value and '}' in string_value:
+            string_value = self.eat("STRING").value[1:-1]  # Remove quotes
+            if "{" in string_value and "}" in string_value:
                 return self.parse_interpolated_string(string_value)
             else:
-                return 'STRING', string_value
-        elif token.type == 'LPAREN':
+                return "STRING", string_value
+        elif token.type == "LPAREN":
             # Handle parentheses for grouping
-            self.eat('LPAREN')
+            self.eat("LPAREN")
             expr = self.expression()
-            self.eat('RPAREN')
+            self.eat("RPAREN")
             return expr
 
     def argument_list(self):
@@ -215,20 +239,20 @@ class TokenParser:
 
     def parse_interpolated_string(self, string):
         parts = []
-        current = ''
+        current = ""
         i = 0
 
         while i < len(string):
-            if string[i] == '{':
+            if string[i] == "{":
                 # Flush the current literal part
                 if current:
                     parts.append(current)
-                    current = ''
+                    current = ""
 
                 # Parse the embedded expression inside {}
                 i += 1
                 expr_start = i
-                while i < len(string) and string[i] != '}':
+                while i < len(string) and string[i] != "}":
                     i += 1
                 if i >= len(string):
                     raise SyntaxError("Unclosed interpolation brace in string")
@@ -243,7 +267,7 @@ class TokenParser:
         if current:
             parts.append(current)
 
-        return 'INTERPOLATED_STRING', parts
+        return "INTERPOLATED_STRING", parts
 
     def expression_from_string(self, expression_code):
         lexer = Lexer(expression_code)

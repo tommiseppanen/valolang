@@ -7,13 +7,16 @@ class Lexer:
         token_rules = [
             (r"[ \t]+", None),
             (r"\d+", "NUMBER"),
-            (r"def", "DEF"),  # Function definitiions
             (r"if", "IF"),
             (r"else", "ELSE"),
             (r"while", "WHILE"),
             (r"break", "BREAK"),
             (r"continue", "CONTINUE"),
             (r"return", "RETURN"),
+            (r"int", "TYPE_INT"),
+            (r"str", "TYPE_STRING"),
+            (r"void", "TYPE_VOID"),
+            (r"list\s*<\s*[a-zA-Z_][a-zA-Z0-9_]*\s*>", "TYPE_LIST"),
             (r"[a-zA-Z_]\w*", "IDENTIFIER"),  # Variable/function names
             (r"[+\-*<>]|==", "OPERATOR"),  # Arithmetic operators
             (r"\(", "LPAREN"),
@@ -23,7 +26,7 @@ class Lexer:
             (r",", "COMMA"),
             (r"\.", "DOT"),
             (r"=", "ASSIGN"), # Variable assignment
-            (r'"([^"\\]*(\\.[^"\\]*)*)"', 'STRING'),  # Strings (including escaped quotes)
+            (r'"([^"\\]*(\\.[^"\\]*)*)"', "STRING"),  # Strings (including escaped quotes)
         ]
         self.rules = [
             (re.compile(pattern), token_type) for pattern, token_type in token_rules
@@ -55,6 +58,7 @@ class Lexer:
         # Emit DEDENT tokens for remaining indentation
         while len(self.indent_stack) > 1:
             self.indent_stack.pop()
+            self.tokens.append(LanguageToken(type="DEDENT", value=None, line=self.line, column=self.column))
         return self.tokens
 
     def handle_indentation(self, text_line):
