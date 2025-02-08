@@ -137,12 +137,12 @@ class TokenParser:
     def return_statement(self):
         self.eat("RETURN")
 
-        if self.current_token() and self.current_token().type in {"NUMBER", "IDENTIFIER", "LPAREN"}:
+        if self.current_token() and self.current_token().type in {"NUMBER", "STRING", "IDENTIFIER", "LPAREN"}:
             return_value = self.expression()
         else:
             return_value = None  # Allow return without a value
 
-        return "RETURN_STATEMENT", return_value
+        return "RETURN", return_value
 
     def expression(self):
         node = self.term()

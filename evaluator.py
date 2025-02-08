@@ -44,7 +44,7 @@ class Evaluator:
                     continue
 
 
-        elif node_type == "RETURN_STATEMENT":
+        elif node_type == "RETURN":
             _, return_value = node
             raise ReturnException(self.eval_node(return_value, context) if return_value else None)
 
@@ -110,8 +110,7 @@ class Evaluator:
                 raise ValueError(f"Unknown operator: {operator}")
 
         elif node_type == 'FUNCTION_DEF':
-            # Store function definition: ('FUNCTION_DEF', name, params, body)
-            _, name, params, body = node
+            _, name, params, body, _ = node
             self.functions[name] = (params, body)
 
         elif node_type == 'ASSIGNMENT':

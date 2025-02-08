@@ -3,6 +3,7 @@ class TypeChecker:
         self.scope = {}
         self.function_signatures = {}
         self.current_function = None
+        self.loop_depth = 0
 
     def check(self, ast):
         for stmt in ast:
@@ -17,6 +18,15 @@ class TypeChecker:
         elif stmt_type == "ASSIGNMENT":
             self.check_variable_assignment(stmt)
 
+        elif stmt_type == "RETURN":
+            self.check_return_statement(stmt)
+
+        elif stmt_type == "IF":
+            self.check_if_statement(stmt)
+
+        elif stmt_type == "WHILE":
+            self.check_while_loop(stmt)
+
         elif stmt_type == "FUNCTION_DEF":
             self.check_function_definition(stmt)
 
@@ -25,6 +35,12 @@ class TypeChecker:
 
         elif stmt_type == "EXPRESSION_STATEMENT":
             self.check_expression(stmt["expression"])
+
+        elif stmt_type == "BREAK" or stmt_type == "CONTINUE":
+            self.check_loop_control(stmt)
+
+        else:
+            raise TypeError(f"Unknown statement type: {stmt_type}")
 
 
     def check_variable_declaration(self, stmt):
@@ -48,6 +64,42 @@ class TypeChecker:
         if expected_type != value_type:
             raise TypeError(f"Type mismatch in assignment: {var_name} expected {expected_type}, got {value_type}")
 
+    def check_return_statement(self, stmt):
+        if self.current_function is None:
+            raise TypeError("Return statement outside of a function")
+
+        return_type = self.check_expression(stmt[1])
+        expected_type = self.current_function["return_type"]
+
+        if return_type != expected_type:
+            raise TypeError(f"Return type mismatch: Expected {expected_type}, got {return_type}")
+
+    def check_if_statement(self, stmt):
+        condition_type = self.check_expression(stmt[1])
+        if condition_type != "bool":
+            raise TypeError(f"If condition must be a boolean, got {condition_type}")
+
+        for sub_stmt in stmt[2]:
+            self.check_statement(sub_stmt)
+
+        if stmt[3] is not None:
+            for sub_stmt in stmt[3]:
+                self.check_statement(sub_stmt)
+
+    def check_while_loop(self, stmt):
+        condition_type = self.check_expression(stmt[1])
+        if condition_type != "bool":
+            raise TypeError(f"While loop condition must be a boolean, got {condition_type}")
+
+        self.loop_depth += 1
+        for sub_stmt in stmt[2]:
+            self.check_statement(sub_stmt)
+        self.loop_depth -= 1
+
+    def check_loop_control(self, stmt):
+        if self.loop_depth == 0:
+            raise TypeError(f"{stmt[0]} statement must be inside a loop")
+
     def check_function_definition(self, stmt):
         func_name = stmt[1]
         param_types = [param[0] for param in stmt[2]]
@@ -62,7 +114,7 @@ class TypeChecker:
         self.scope = {param[1]: param[0] for param in stmt[2]}
         self.current_function = {"name": func_name, "return_type": return_type}
 
-        for sub_stmt in stmt[2]:
+        for sub_stmt in stmt[3]:
             self.check_statement(sub_stmt)
 
         # Restore previous scope
