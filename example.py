@@ -6,6 +6,8 @@ from type_checker import TypeChecker
 text = """
 list<str> x = ["test", "abc", "text"]
 print(x)
+x[2] = "new value"
+print(x)
 print(x.length())
 
 int l = 0
@@ -34,10 +36,6 @@ int multiply(int x, int y)
 print(multiply(add(2, 3), 2))
 """
 
-text2 = """
-x[2] = "new value"
-print(x)
-"""
 lexer = Lexer(text)
 tokens = lexer.tokenize()
 for token in tokens:

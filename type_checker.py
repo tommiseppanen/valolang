@@ -18,6 +18,9 @@ class TypeChecker:
         elif stmt_type == "ASSIGNMENT":
             self.check_variable_assignment(stmt)
 
+        elif stmt_type == "INDEX_ASSIGNMENT":
+            self.check_index_assignment(stmt)
+
         elif stmt_type == "RETURN":
             self.check_return_statement(stmt)
 
@@ -55,7 +58,7 @@ class TypeChecker:
         if declared_type != value_type:
             raise TypeError(f"Type mismatch in variable declaration: Expected {declared_type}, got {value_type}")
 
-        self.scope[var_name] = declared_type
+        self.scope[var_name] = stmt[1]
 
     def check_variable_assignment(self, stmt):
         var_name = stmt[1]
@@ -64,6 +67,17 @@ class TypeChecker:
 
         expected_type = self.scope[var_name]
         value_type = self.check_expression(stmt[2])
+
+        if expected_type != value_type:
+            raise TypeError(f"Type mismatch in assignment: {var_name} expected {expected_type}, got {value_type}")
+
+    def check_index_assignment(self, stmt):
+        var_name = stmt[1]
+        if var_name not in self.scope:
+            raise TypeError(f"Undefined variable: {var_name}")
+
+        expected_type = self.scope[var_name][5:-1]
+        value_type = self.check_expression(stmt[3])
 
         if expected_type != value_type:
             raise TypeError(f"Type mismatch in assignment: {var_name} expected {expected_type}, got {value_type}")
