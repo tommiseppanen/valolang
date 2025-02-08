@@ -9,22 +9,22 @@ print("Hello World")
 
 Assignment
 ```
-a = 1 + 2
+int a = 1 + 2
 print("Value of a: {a}")
 ```
 
 Functions
 ```
-def add(x, y)
+int add(x, y)
     return x + y
-def multiply(x, y)
+int multiply(x, y)
     return x * y
-multiply(add(2, 3), 2)
+print(multiply(add(2, 3), 2))
 ```
 
 If statement
 ```
-a = 1 + 2
+int a = 1 + 2
 if a == 3
     print("Hello there!")
 else
@@ -33,7 +33,7 @@ else
 
 While statement
 ```
-i = 0
+int i = 0
 while i < 10
     i = i + 1
     if i == 3
@@ -45,7 +45,7 @@ while i < 10
 
 Lists
 ```
-x = ["test", "abc", "text"]
+list<str> x = ["test", "abc", "text"]
 x[2] = "new value"
 print(x)
 print(x.length())
