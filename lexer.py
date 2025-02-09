@@ -6,6 +6,7 @@ class Lexer:
     def __init__(self, source):
         token_rules = [
             (r"[ \t]+", None),
+            (r"\#.*", None),  # single-line comments
             (r"\d+", "NUMBER"),
             (r"if", "IF"),
             (r"else", "ELSE"),
