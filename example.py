@@ -4,6 +4,20 @@ from token_parser import TokenParser
 from type_checker import TypeChecker
 
 text = """
+//regular comment
+/*
+Multiline comment
+*/
+/* 
+Nested multiline comments are supported:
+/*
+print("This is not printed")
+*/
+*/
+print("€#sdf"/*Also inline comments work*/)
+
+print("You can use /* and */ for nested comments")
+print("You can use // for regular comments")
 list<str> x = ["test", "abc", "text"]
 print(x)
 x[2] = "new value"

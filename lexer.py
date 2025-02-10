@@ -6,7 +6,7 @@ class Lexer:
     def __init__(self, source):
         token_rules = [
             (r"[ \t]+", None),
-            (r"\#.*", None),  # single-line comments
+            (r"\/\/.*", None),  # single-line comments
             (r"\d+", "NUMBER"),
             (r"if", "IF"),
             (r"else", "ELSE"),
@@ -37,10 +37,9 @@ class Lexer:
         self.column = 0
         self.text = source.splitlines()
         self.indent_stack = [0]
+        self.comment_depth = 0
 
     def tokenize(self):
-
-
         while self.line < len(self.text):
             text_line = self.text[self.line]
             self.line += 1
@@ -82,6 +81,24 @@ class Lexer:
         """Tokenizes the rest of the line using regex."""
         tokens = []
         while self.column < len(text_line):
+
+            # Start of a multi-line comment
+            if text_line[self.column:self.column+2] == "/*":
+                self.comment_depth += 1
+                self.column += 2
+                continue
+
+            # End of a multi-line comment
+            if text_line[self.column:self.column+2] == "*/" and self.comment_depth > 0:
+                self.comment_depth -= 1
+                self.column += 2
+                continue
+
+            # Skip characters if we are inside comment
+            if self.comment_depth > 0:
+                self.column += 1
+                continue
+
             match = None
             for pattern, token_type in self.rules:
                 match = pattern.match(text_line, self.column)
@@ -92,7 +109,6 @@ class Lexer:
                         tokens.append(LanguageToken(token_type, value, self.line, self.column))
 
                     self.column += len(value)
-
                     break
 
             if not match:
