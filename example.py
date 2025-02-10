@@ -5,15 +5,19 @@ from type_checker import TypeChecker
 
 text = """
 //regular comment
+
 /*
 Multiline comment
 */
+
 /* 
 Nested multiline comments are supported:
-/*
-print("This is not printed")
+  /*
+  Nested comment in here
+  */
+  // Another nested comment
 */
-*/
+
 print("€#sdf"/*Also inline comments work*/)
 
 print("You can use /* and */ for nested comments")

@@ -50,3 +50,20 @@ x[2] = "new value"
 print(x)
 print(x.length())
 ```
+
+Comments
+```
+//regular comment
+
+/*
+Multiline comment
+*/
+
+/* 
+Nested multiline comments are supported:
+  /*
+  Nested comment in here
+  */
+  // Another nested comment
+*/
+```
