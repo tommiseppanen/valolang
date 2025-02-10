@@ -49,8 +49,9 @@ class Lexer:
             if not text_line.strip():
                 continue
 
-            # Handle indentation
-            self.tokens.extend(self.handle_indentation(text_line))
+            if self.comment_depth == 0:
+                # Handle indentation
+                self.tokens.extend(self.handle_indentation(text_line))
 
             # Tokenize the rest of the line with regex
             self.tokens.extend(self.tokenize_line(text_line))
