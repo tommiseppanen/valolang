@@ -2,7 +2,7 @@ from lexer import Lexer
 
 
 class TokenParser:
-    TYPES = ["TYPE_INT", "TYPE_STRING", "TYPE_LIST", "TYPE_VOID"]
+    TYPES = ["TYPE_INT", "TYPE_STRING", "TYPE_LIST", "TYPE_VOID", "TYPE_BOOL"]
     DEFAULT_VALUES = [0, ""]
     def __init__(self, tokens):
         self.tokens = tokens
@@ -163,6 +163,8 @@ class TokenParser:
         token = self.current_token()
         if token.type == "NUMBER":
             return "NUMBER", self.eat("NUMBER").value
+        elif token.type == "BOOLEAN":
+            return "BOOLEAN", self.eat("BOOLEAN").value
         elif token.type == "LBRACKET":
             return self.list_literal()
         elif token.type == "IDENTIFIER":

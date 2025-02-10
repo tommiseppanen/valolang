@@ -60,6 +60,13 @@ list<str> createList()
 void myPrintInt(int i)
     print(i)
 myPrintInt(test(createList()))
+
+bool myBool = true
+if myBool == true
+    print("true block")
+else
+    print("false block")
+
 """
 
 lexer = Lexer(text)

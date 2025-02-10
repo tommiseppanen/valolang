@@ -8,6 +8,7 @@ class Lexer:
             (r"[ \t]+", None),
             (r"\/\/.*", None),  # single-line comments
             (r"\d+", "NUMBER"),
+            (r"true|false", "BOOLEAN"),
             (r"if", "IF"),
             (r"else", "ELSE"),
             (r"while", "WHILE"),
@@ -15,11 +16,12 @@ class Lexer:
             (r"continue", "CONTINUE"),
             (r"return", "RETURN"),
             (r"int", "TYPE_INT"),
+            (r"bool", "TYPE_BOOL"),
             (r"str", "TYPE_STRING"),
             (r"void", "TYPE_VOID"),
             (r"list\s*<\s*[a-zA-Z_][a-zA-Z0-9_]*\s*>", "TYPE_LIST"),
             (r"[a-zA-Z_]\w*", "IDENTIFIER"),  # Variable/function names
-            (r"[+\-*<>]|==", "OPERATOR"),  # Arithmetic operators
+            (r"[+\-*<>]|==|!=", "OPERATOR"),  # Arithmetic operators
             (r"\(", "LPAREN"),
             (r"\)", "RPAREN"),
             (r"\[", "LBRACKET"),
