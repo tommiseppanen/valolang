@@ -3,7 +3,7 @@ from lexer import Lexer
 
 class TokenParser:
     TYPES = ["TYPE_INT", "TYPE_STRING", "TYPE_LIST", "TYPE_VOID", "TYPE_BOOL"]
-    DEFAULT_VALUES = [0, ""]
+    DEFAULT_VALUES = [("NUMBER","0"), ("STRING",""), ("LIST_LITERAL","[]"), None, ("BOOLEAN", "false")]
     def __init__(self, tokens):
         self.tokens = tokens
         self.pos = 0

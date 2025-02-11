@@ -4,6 +4,11 @@ from token_parser import TokenParser
 from type_checker import TypeChecker
 
 text = """
+void testVoidReturn(int i)
+    return
+    print(i)
+    
+testVoidReturn(1)
 //regular comment
 
 /*
@@ -28,7 +33,7 @@ x[2] = "new value"
 print(x)
 print(x.length())
 
-int l = 0
+int l
 print(l)
 int i = 0
 while i < 10
@@ -59,6 +64,7 @@ list<str> createList()
     return ["1", "2", "3", "4"]
 void myPrintInt(int i)
     print(i)
+    return
 myPrintInt(test(createList()))
 
 bool myBool = true

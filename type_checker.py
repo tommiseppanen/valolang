@@ -82,7 +82,7 @@ class TypeChecker:
         if self.current_function is None:
             raise TypeError("Return statement outside of a function")
 
-        return_type = self.check_expression(stmt[1])
+        return_type = self.check_expression(stmt[1]) if stmt[1] else "void"
         expected_type = self.current_function["return_type"]
 
         if return_type != expected_type:
