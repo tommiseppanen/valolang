@@ -5,7 +5,8 @@ from type_checker import TypeChecker
 
 text = """
 void testVoidReturn(int i)
-    return
+    if i == 1
+        return
     print(i)
     
 testVoidReturn(1)
