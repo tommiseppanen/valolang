@@ -4,6 +4,10 @@ from token_parser import TokenParser
 from type_checker import TypeChecker
 
 text = """
+str a = "First part of the text in a long line. This will continue " + 
+"in next line. Rest of the text in here"
+print(a)
+
 void testVoidReturn(int i)
     if i == 1
         return

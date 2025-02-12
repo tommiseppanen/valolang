@@ -193,7 +193,10 @@ class TypeChecker:
             right_type = self.check_expression(expr[3])
             operator = expr[1]
 
-            if operator in {"+", "-", "*", "/"}:
+            if operator == "+" and left_type == "str" and right_type == "str":
+                return "str"
+
+            elif operator in {"+", "-", "*", "/"}:
                 if left_type != "int" or right_type != "int":
                     raise TypeError(f"Operator '{operator}' expects two integers")
                 return "int"
